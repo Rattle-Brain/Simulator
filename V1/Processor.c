@@ -106,6 +106,7 @@ void Processor_DecodeAndExecuteInstruction() {
 			//then we write the obtained data to the cpuMBR register
 			Buses_write_DataBus_From_To(MMU, CPU);
 			//The data is stored in the MBR Register of the processor
+			//we transfer it to operand2 (not necessary)
 			operand2 = registerMBR_CPU.cell;
 
 			registerAccumulator_CPU = operand1 + operand2;
