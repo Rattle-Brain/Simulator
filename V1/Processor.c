@@ -96,12 +96,20 @@ void Processor_DecodeAndExecuteInstruction() {
 		
 		//Instruction MEMADD
 		case MEMADD_INST:
-			MainMemory_SetMAR(operand2);
-			MainMemory_SetMBR(MainMemory_GetMAR());
-			MainMemory_GetMBR(registerMBR_CPU.cell);
+			//Set the value of the memAddres to the MAR
+			registerMAR_CPU = operand2;
+			//Search in the direction
+			Buses_write_AddressBus_From_To(CPU, MMU);
+			// Tell the MMU controller to read
+			registerCTRL_CPU=CTRLREAD;
+			Buses_write_ControlBus_From_To(CPU,MMU);
+			//then we write the obtained data to the cpuMBR register
+			Buses_write_DataBus_From_To(MMU, CPU);
+			//The data is stored in the MBR Register of the processor
 			operand2 = registerMBR_CPU.cell;
+
 			registerAccumulator_CPU = operand1 + operand2;
-			Processor_CheckOverflow(operand1, operand2);
+			registerPC_CPU++;
 			break;
 
 		// Instruction SHIFT (SAL and SAR)
