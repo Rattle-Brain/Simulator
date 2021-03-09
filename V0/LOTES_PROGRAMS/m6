@@ -1,0 +1,38 @@
+
+60
+5
+#30 "m6 begins\n"
+#49 "m6 ends\n"
+#44 1000// Number of iterations in the main program
+#45 10// Misec. for each I/O operation
+#46 10 // Length of each CPU burst (1000 aprox. 0.002 sec)
+
+.es
+MOV #45 %REGB
+ADD 1 0
+TRAP 40
+RET
+
+.cpu
+// 47 will store the index of the loop
+MOV #46 #47
+MEMADD -1 47
+WRITE 47
+ZJUMP 2
+JUMP -3
+RET
+
+.main
+// 48 will store the index of the main loop
+MOV 30 %REGB
+TRAP 12
+MOV #44 #48
+CALL cpu
+CALL es
+MEMADD -1 48
+WRITE 48
+ZJUMP 2
+JUMP -5
+MOV 49 %REGB
+TRAP 12
+TRAP 3
