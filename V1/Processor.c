@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "Wrappers.h"
+#include "MMU.h"
 
 // Internals Functions prototypes
 void Processor_ManageInterrupts();

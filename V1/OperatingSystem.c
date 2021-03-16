@@ -123,7 +123,13 @@ int OperatingSystem_LongTermScheduler() {
 		numberOfSuccessfullyCreatedProcesses=0;
 	
 	for (i=0; programList[i]!=NULL && i<PROGRAMSMAXNUMBER ; i++) {
-		PID=OperatingSystem_CreateProcess(i);
+		PID = OperatingSystem_CreateProcess(i);
+
+		if(PID == NOFREEENTRY)
+		{
+			ComputerSystem_DebugMessage(103, ERROR, programList[i]->executableName);
+			break;
+		}
 		numberOfSuccessfullyCreatedProcesses++;
 		if (programList[i]->type==USERPROGRAM) 
 			numberOfNotTerminatedUserProcesses++;
@@ -148,6 +154,12 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 	// Obtain a process ID
 	PID=OperatingSystem_ObtainAnEntryInTheProcessTable();
+
+
+	if(PID == NOFREEENTRY)
+	{
+		return NOFREEENTRY;
+	}
 
 	// Check if programFile exists
 	programFile=fopen(executableProgram->executableName, "r");
