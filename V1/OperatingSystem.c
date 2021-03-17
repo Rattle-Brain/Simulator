@@ -24,6 +24,7 @@ int OperatingSystem_ShortTermScheduler();
 int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
+void OperatingSystem_PrintReadyToRunQueue();
 
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
@@ -38,7 +39,7 @@ int executingProcessID=NOPROCESS;
 int sipID;
 
 // Initial PID for assignation
-int initialPID=0;
+int initialPID=PROCESSTABLEMAXSIZE-1;
 
 // Begin indes for daemons in programList
 int baseDaemonsInProgramList; 
@@ -128,20 +129,30 @@ int OperatingSystem_LongTermScheduler() {
 		if(PID == NOFREEENTRY)
 		{
 			ComputerSystem_DebugMessage(103, ERROR, programList[i]->executableName);
-			continue;
 		}
 		else if(PID == PROGRAMDOESNOTEXIST)
 		{
 			ComputerSystem_DebugMessage(104, ERROR, programList[i]->executableName, "it does not exist");
-			continue;
+			if(programList[i+1] == NULL)
+			{
+				Processor_ActivatePSW_Bit(POWEROFF_BIT);
+			}
 		}
 		else if(PID == PROGRAMNOTVALID)
 		{
 			ComputerSystem_DebugMessage(104, ERROR, programList[i]->executableName, "invalid priority or size");
+			if(programList[i+1] == NULL)
+			{
+				Processor_ActivatePSW_Bit(POWEROFF_BIT);
+			}
 		}
 		else if(PID == TOOBIGPROCESS)
 		{
 			ComputerSystem_DebugMessage(105, ERROR, programList[i]->executableName);
+			if(programList[i+1] == NULL)
+			{
+				Processor_ActivatePSW_Bit(POWEROFF_BIT);
+			}
 		}
 		else{
 			numberOfSuccessfullyCreatedProcesses++;
@@ -200,7 +211,11 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
  	loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID);
 
 	// Load program in the allocated memory
-	OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize);
+	int resultOfLoading = OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize);
+	if(resultOfLoading == TOOBIGPROCESS)
+	{
+		return TOOBIGPROCESS;
+	}
 	
 	// PCB initialization
 	OperatingSystem_PCBInitialization(PID, loadingPhysicalAddress, processSize, priority, indexOfExecutableProgram);
@@ -211,6 +226,11 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	return PID;
 }
 
+
+void OperatingSystem_PrintReadyToRunQueue()
+{
+	
+}
 
 // Main memory is assigned in chunks. All chunks are the same size. A process
 // always obtains the chunk whose position in memory is equal to the processor identifier
