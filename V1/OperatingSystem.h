@@ -18,6 +18,9 @@
 
 #define NOPROCESS -1
 
+#define NUMBEROFQUEUES 2
+enum TypeOfReadyToRunProcessQueues { USERPROCCESSQUEUE, DAEMONSQUEUE };
+
 // Contains the possible type of programs
 enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM }; 
 

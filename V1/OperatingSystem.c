@@ -29,6 +29,9 @@ void OperatingSystem_PrintReadyToRunQueue();
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
 
+//different processes states
+char* statesNames[5] = {"NEW", "READY", "EXECUTING", "BLOCKED", "EXIT"};
+
 // Address base for OS code in this version
 int OS_address_base = PROCESSTABLEMAXSIZE * MAINMEMORYSECTIONSIZE;
 
@@ -39,7 +42,7 @@ int executingProcessID=NOPROCESS;
 int sipID;
 
 // Initial PID for assignation
-int initialPID=PROCESSTABLEMAXSIZE-1;
+int initialPID=PROCESSTABLEMAXSIZE - 1;
 
 // Begin indes for daemons in programList
 int baseDaemonsInProgramList; 
@@ -48,6 +51,7 @@ int baseDaemonsInProgramList;
 heapItem readyToRunQueue[PROCESSTABLEMAXSIZE];
 int numberOfReadyToRunProcesses=0;
 
+char* queueNames[NUMBEROFQUEUES] = {"USER", "DAEMONS"};
 // Variable containing the number of not terminated user processes
 int numberOfNotTerminatedUserProcesses=0;
 
@@ -133,26 +137,14 @@ int OperatingSystem_LongTermScheduler() {
 		else if(PID == PROGRAMDOESNOTEXIST)
 		{
 			ComputerSystem_DebugMessage(104, ERROR, programList[i]->executableName, "it does not exist");
-			if(programList[i+1] == NULL)
-			{
-				Processor_ActivatePSW_Bit(POWEROFF_BIT);
-			}
 		}
 		else if(PID == PROGRAMNOTVALID)
 		{
 			ComputerSystem_DebugMessage(104, ERROR, programList[i]->executableName, "invalid priority or size");
-			if(programList[i+1] == NULL)
-			{
-				Processor_ActivatePSW_Bit(POWEROFF_BIT);
-			}
 		}
 		else if(PID == TOOBIGPROCESS)
 		{
 			ComputerSystem_DebugMessage(105, ERROR, programList[i]->executableName);
-			if(programList[i+1] == NULL)
-			{
-				Processor_ActivatePSW_Bit(POWEROFF_BIT);
-			}
 		}
 		else{
 			numberOfSuccessfullyCreatedProcesses++;
@@ -196,7 +188,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	processSize=OperatingSystem_ObtainProgramSize(programFile);	
 	priority=OperatingSystem_ObtainPriority(programFile);
 
-	if (processSize > MAINMEMORYSECTIONSIZE || processSize <= 0 || priority <= 0)
+	if (processSize > MAINMEMORYSECTIONSIZE || processSize <= 0 || priority < 0)
 	{
 		if(processSize > MAINMEMORYSECTIONSIZE)
 		{
@@ -226,10 +218,30 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	return PID;
 }
 
-
+//Function to show processes ready to execute in the queue
 void OperatingSystem_PrintReadyToRunQueue()
 {
-	
+	ComputerSystem_DebugMessage(106, SHORTTERMSCHEDULE);
+	for(int i = 0; i < numberOfReadyToRunProcesses; i++)
+	{
+		int PID = readyToRunQueue[i].info;
+		if(PID == initialPID && numberOfReadyToRunProcesses == 1)
+		{
+			printf("\t");
+		}
+		if(i + 1 == numberOfReadyToRunProcesses)
+		{
+			ComputerSystem_DebugMessage(109, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
+		}
+		else if(i == 0)
+		{
+			ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
+		} 
+		else
+		{
+			ComputerSystem_DebugMessage(108, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
+		}
+	}
 }
 
 // Main memory is assigned in chunks. All chunks are the same size. A process
@@ -250,6 +262,7 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 	processTable[PID].initialPhysicalAddress=initialPhysicalAddress;
 	processTable[PID].processSize=processSize;
 	processTable[PID].state=NEW;
+	ComputerSystem_DebugMessage(111, SYSPROC, PID, programList[processPLIndex]->executableName, "NEW");
 	processTable[PID].priority=priority;
 	processTable[PID].programListIndex=processPLIndex;
 	// Daemons run in protected mode and MMU use real address
@@ -271,7 +284,9 @@ void OperatingSystem_MoveToTheREADYState(int PID) {
 	
 	if (Heap_add(PID, readyToRunQueue,QUEUE_PRIORITY ,&numberOfReadyToRunProcesses ,PROCESSTABLEMAXSIZE)>=0) {
 		processTable[PID].state=READY;
-	} 
+		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "NEW", "READY");
+	}
+	OperatingSystem_PrintReadyToRunQueue();
 }
 
 
@@ -309,6 +324,7 @@ void OperatingSystem_Dispatch(int PID) {
 	processTable[PID].state=EXECUTING;
 	// Modify hardware registers with appropriate values for the process identified by PID
 	OperatingSystem_RestoreContext(PID);
+	ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "READY", "EXECUTING");
 }
 
 
