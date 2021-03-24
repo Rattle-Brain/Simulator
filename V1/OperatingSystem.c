@@ -86,6 +86,11 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	
 	// Create all user processes from the information given in the command line
 	OperatingSystem_LongTermScheduler();
+
+	if(numberOfNotTerminatedUserProcesses == 0)
+	{
+		Processor_ActivatePSW_Bit(POWEROFF_BIT);
+	}
 	
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 		// Show red message "FATAL ERROR: Missing SIP program!\n"
@@ -280,10 +285,12 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 	if (programList[processPLIndex]->type == DAEMONPROGRAM) {
 		processTable[PID].copyOfPCRegister=initialPhysicalAddress;
 		processTable[PID].copyOfPSWRegister= ((unsigned int) 1) << EXECUTION_MODE_BIT;
+		processTable[PID].copyOfAccRegister=0;
 	} 
 	else {
 		processTable[PID].copyOfPCRegister=0;
 		processTable[PID].copyOfPSWRegister=0;
+		processTable[PID].copyOfAccRegister=0;
 	}
 
 }
