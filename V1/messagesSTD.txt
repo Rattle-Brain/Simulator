@@ -17,3 +17,4 @@
 112,\tUSER: [@G%d@@,%d],
 113,\tDAEMONS: [@G%d@@,%d],
 114,\tDAEMONS: [@G%d@@,%d]\n
+115,Process [@G%d - %s@@] will transfer the control of the processor to the process [@G%d - %s@@]\n

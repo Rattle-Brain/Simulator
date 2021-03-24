@@ -25,6 +25,7 @@ int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
+void OperatingSystem_HandleYield();
 
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
@@ -293,8 +294,16 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 void OperatingSystem_MoveToTheREADYState(int PID, int typeQueue) {
 	
 	if (Heap_add(PID, readyToRunQueues[typeQueue] ,typeQueue ,&numberOfReadyToRunProcesses[typeQueue] ,PROCESSTABLEMAXSIZE)>=0) {
+		switch (processTable[PID].state)
+		{
+			case NEW:
+				ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "NEW", "READY");
+				break;
+			case EXECUTING:
+				ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "EXECUTING", "READY");
+				break;
+		}
 		processTable[PID].state=READY;
-		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "NEW", "READY");
 	}
 	OperatingSystem_PrintReadyToRunQueue();
 }
@@ -307,7 +316,7 @@ int OperatingSystem_ShortTermScheduler() {
 	
 	int selectedProcess;
 
-	if(numberOfReadyToRunProcesses > 0)
+	if(numberOfNotTerminatedUserProcesses > 0)
 		selectedProcess=OperatingSystem_ExtractFromReadyToRun(USERPROCCESSQUEUE);
 	else
 		selectedProcess=OperatingSystem_ExtractFromReadyToRun(DAEMONPROGRAM);
@@ -440,6 +449,43 @@ void OperatingSystem_HandleSystemCall() {
 			ComputerSystem_DebugMessage(73,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 			OperatingSystem_TerminateProcess();
 			break;
+		case SYSCALL_YIELD:
+			OperatingSystem_HandleYield();
+			break;
+	}
+}
+
+void OperatingSystem_HandleYield()
+{
+	int nextProcess;
+	if(processTable[executingProcessID].queueID == USERPROCCESSQUEUE)
+	{
+		int PID_OF_NEXT = Heap_getFirst(readyToRunQueues[USERPROCCESSQUEUE], numberOfReadyToRunProcesses[USERPROCCESSQUEUE]);
+		if(processTable[PID_OF_NEXT].priority == processTable[executingProcessID].priority)
+		{
+			ComputerSystem_DebugMessage(115, SHORTTERMSCHEDULE, executingProcessID, programList[executingProcessID]->executableName, 
+			PID_OF_NEXT, programList[PID_OF_NEXT]->executableName);
+			nextProcess = OperatingSystem_ShortTermScheduler();
+			OperatingSystem_PreemptRunningProcess();
+			OperatingSystem_Dispatch(nextProcess);
+		}
+		else
+			return;
+	}
+	else
+	{
+		int PID_OF_NEXT = Heap_getFirst(readyToRunQueues[DAEMONSQUEUE], numberOfReadyToRunProcesses[DAEMONSQUEUE]);
+		if(processTable[PID_OF_NEXT].priority == processTable[executingProcessID].priority)
+		{
+			ComputerSystem_DebugMessage(115, SHORTTERMSCHEDULE, executingProcessID, programList[executingProcessID]->executableName, 
+			PID_OF_NEXT, programList[PID_OF_NEXT]->executableName);
+			nextProcess = OperatingSystem_ShortTermScheduler();
+			OperatingSystem_PreemptRunningProcess();
+			OperatingSystem_Dispatch(nextProcess);
+			Processor_SetPC(processTable[nextProcess].copyOfPCRegister);
+		}
+		else
+			return;
 	}
 }
 	

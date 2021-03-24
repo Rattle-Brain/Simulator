@@ -28,17 +28,19 @@ enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM };
 enum ProcessStates { NEW, READY, EXECUTING, BLOCKED, EXIT};
 
 // Enumerated type containing the list of system calls and their numeric identifiers
-enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_PRINTEXECPID=5};
+enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD = 4, SYSCALL_PRINTEXECPID=5};
 
 // A PCB contains all of the information about a process that is needed by the OS
 typedef struct {
 	int busy;
+	int queueID;
 	int initialPhysicalAddress;
 	int processSize;
 	int state;
 	int priority;
 	int copyOfPCRegister;
 	unsigned int copyOfPSWRegister;
+	int copyOfAccRegister;
 	int programListIndex;
 } PCB;
 
