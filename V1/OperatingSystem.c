@@ -463,8 +463,8 @@ void OperatingSystem_HandleYield()
 		int PID_OF_NEXT = Heap_getFirst(readyToRunQueues[USERPROCCESSQUEUE], numberOfReadyToRunProcesses[USERPROCCESSQUEUE]);
 		if(processTable[PID_OF_NEXT].priority == processTable[executingProcessID].priority)
 		{
-			ComputerSystem_DebugMessage(115, SHORTTERMSCHEDULE, executingProcessID, programList[executingProcessID]->executableName, 
-			PID_OF_NEXT, programList[PID_OF_NEXT]->executableName);
+			ComputerSystem_DebugMessage(115, SHORTTERMSCHEDULE, executingProcessID, programList[executingProcessID + 1]->executableName, 
+			PID_OF_NEXT, programList[PID_OF_NEXT + 1]->executableName);
 			nextProcess = OperatingSystem_ShortTermScheduler();
 			OperatingSystem_PreemptRunningProcess();
 			OperatingSystem_Dispatch(nextProcess);
@@ -477,8 +477,8 @@ void OperatingSystem_HandleYield()
 		int PID_OF_NEXT = Heap_getFirst(readyToRunQueues[DAEMONSQUEUE], numberOfReadyToRunProcesses[DAEMONSQUEUE]);
 		if(processTable[PID_OF_NEXT].priority == processTable[executingProcessID].priority)
 		{
-			ComputerSystem_DebugMessage(115, SHORTTERMSCHEDULE, executingProcessID, programList[executingProcessID]->executableName, 
-			PID_OF_NEXT, programList[PID_OF_NEXT]->executableName);
+			ComputerSystem_DebugMessage(115, SHORTTERMSCHEDULE, executingProcessID, programList[executingProcessID + 1]->executableName, 
+			PID_OF_NEXT, programList[PID_OF_NEXT + 1]->executableName);
 			nextProcess = OperatingSystem_ShortTermScheduler();
 			OperatingSystem_PreemptRunningProcess();
 			OperatingSystem_Dispatch(nextProcess);
