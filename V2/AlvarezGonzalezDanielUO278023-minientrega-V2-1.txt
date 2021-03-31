@@ -1,0 +1,70 @@
+33 messages loaded from file messagesTCH.txt
+15 messages loaded from file messagesSTD.txt
+User program list:
+	Program [programVerySimple] with arrival time [0]
+	Program [programVerySimple] with arrival time [0]
+0 Asserts Loaded
+	[0] Process [3 - SystemIdleProcess] moving to the [NEW] state
+	[0] Process [3] created from program [SystemIdleProcess]
+	[0] Process [3 - SystemIdleProcess] moving from the [NEW] state to the [READY] state
+	[0] Ready-to-run processes queues:
+		DAEMONS: [3,100]
+	[0] Process [0 - programVerySimple] moving to the [NEW] state
+	[0] Process [0] created from program [programVerySimple]
+	[0] Process [0 - programVerySimple] moving from the [NEW] state to the [READY] state
+	[0] Ready-to-run processes queues:
+		USER: [0,8]
+		DAEMONS: [3,100]
+	[0] Process [1 - programVerySimple] moving to the [NEW] state
+	[0] Process [1] created from program [programVerySimple]
+	[0] Process [1 - programVerySimple] moving from the [NEW] state to the [READY] state
+	[0] Ready-to-run processes queues:
+	USER: [0,8], [1,8]
+		DAEMONS: [3,100]
+	[0] Process [0 - programVerySimple] moving from the [READY] state to the [EXECUTING] state
+[1] {0D 000 000} IRET 0 0 (PC: 0, Accumulator: 0, PSW: 0002 [--------------Z-])
+[2] {05 000 000} NOP 0 0 (PC: 1, Accumulator: 0, PSW: 0002 [--------------Z-])
+[3] {04 005 000} TRAP 5 0 (PC: 2, Accumulator: 0, PSW: 0002 [--------------Z-])
+[4] {0C 002 000} OS 2 0 (PC: 242, Accumulator: 0, PSW: 0082 [--------X-----Z-])
+	[5] Process [0 - programVerySimple] has the processor assigned
+[6] {0D 000 000} IRET 0 0 (PC: 2, Accumulator: 0, PSW: 0002 [--------------Z-])
+[7] {01 00A 80D} ADD 10 -13 (PC: 3, Accumulator: -3, PSW: 0004 [-------------N--])
+[8] {08 00F 000} WRITE 15 0 (PC: 4, Accumulator: -3, PSW: 0004 [-------------N--])
+[9] {0E 07B 00F} MEMADD 123 -3 (PC: 5, Accumulator: 120, PSW: 0000 [----------------])
+[10] {08 010 000} WRITE 16 0 (PC: 6, Accumulator: 120, PSW: 0000 [----------------])
+[11] {0E 878 010} MEMADD -120 120 (PC: 7, Accumulator: 0, PSW: 0002 [--------------Z-])
+[12] {08 00E 000} WRITE 14 0 (PC: 8, Accumulator: 0, PSW: 0002 [--------------Z-])
+[13] {09 00E 000} READ 14 0 (PC: 9, Accumulator: 0, PSW: 0002 [--------------Z-])
+[14] {09 00F 000} READ 15 0 (PC: 10, Accumulator: -3, PSW: 0004 [-------------N--])
+[15] {09 010 000} READ 16 0 (PC: 11, Accumulator: 120, PSW: 0000 [----------------])
+[16] {04 003 000} TRAP 3 0 (PC: 12, Accumulator: 120, PSW: 0000 [----------------])
+[17] {0C 002 000} OS 2 0 (PC: 242, Accumulator: 120, PSW: 0080 [--------X-------])
+	[18] Process [0 - programVerySimple] has requested to terminate
+	[18] Process [1 - programVerySimple] moving from the [READY] state to the [EXECUTING] state
+[19] {0D 000 000} IRET 0 0 (PC: 0, Accumulator: 120, PSW: 0000 [----------------])
+[20] {05 000 000} NOP 0 0 (PC: 1, Accumulator: 120, PSW: 0000 [----------------])
+[21] {04 005 000} TRAP 5 0 (PC: 2, Accumulator: 120, PSW: 0000 [----------------])
+[22] {0C 002 000} OS 2 0 (PC: 242, Accumulator: 120, PSW: 0080 [--------X-------])
+	[23] Process [1 - programVerySimple] has the processor assigned
+[24] {0D 000 000} IRET 0 0 (PC: 2, Accumulator: 120, PSW: 0000 [----------------])
+[25] {01 00A 80D} ADD 10 -13 (PC: 3, Accumulator: -3, PSW: 0004 [-------------N--])
+[26] {08 00F 000} WRITE 15 0 (PC: 4, Accumulator: -3, PSW: 0004 [-------------N--])
+[27] {0E 07B 00F} MEMADD 123 -3 (PC: 5, Accumulator: 120, PSW: 0000 [----------------])
+[28] {08 010 000} WRITE 16 0 (PC: 6, Accumulator: 120, PSW: 0000 [----------------])
+[29] {0E 878 010} MEMADD -120 120 (PC: 7, Accumulator: 0, PSW: 0002 [--------------Z-])
+[30] {08 00E 000} WRITE 14 0 (PC: 8, Accumulator: 0, PSW: 0002 [--------------Z-])
+[31] {09 00E 000} READ 14 0 (PC: 9, Accumulator: 0, PSW: 0002 [--------------Z-])
+[32] {09 00F 000} READ 15 0 (PC: 10, Accumulator: -3, PSW: 0004 [-------------N--])
+[33] {09 010 000} READ 16 0 (PC: 11, Accumulator: 120, PSW: 0000 [----------------])
+[34] {04 003 000} TRAP 3 0 (PC: 12, Accumulator: 120, PSW: 0000 [----------------])
+[35] {0C 002 000} OS 2 0 (PC: 242, Accumulator: 120, PSW: 0080 [--------X-------])
+	[36] Process [1 - programVerySimple] has requested to terminate
+	[36] Process [3 - SystemIdleProcess] moving from the [READY] state to the [EXECUTING] state
+[37] {0D 000 000} IRET 0 0 (PC: 183, Accumulator: 120, PSW: 0080 [--------X-------])
+[38] {04 003 000} TRAP 3 0 (PC: 184, Accumulator: 120, PSW: 0080 [--------X-------])
+[39] {0C 002 000} OS 2 0 (PC: 242, Accumulator: 120, PSW: 0080 [--------X-------])
+	[40] Process [3 - SystemIdleProcess] has requested to terminate
+	[40] The system will shut down now...
+[41] {0D 000 000} IRET 0 0 (PC: 241, Accumulator: 120, PSW: 0080 [--------X-------])
+[42] {0B 000 000} HALT 0 0 (PC: 241, Accumulator: 120, PSW: 0081 [--------X------S])
+END of the simulation
