@@ -26,6 +26,7 @@ void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 void OperatingSystem_HandleYield();
+void OperatingSystem_HandleClockInterrupt();
 
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
@@ -547,10 +548,13 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 		case EXCEPTION_BIT: // EXCEPTION_BIT=6
 			OperatingSystem_HandleException();
 			break;
+		case CLOCKINT_BIT:
+			OperatingSystem_HandleClockInterrupt();
 	}
 
 }
 // In OperatingSystem.c Exercise 2-b of V2
-void OperatingSystem_HandleClockInterrupt(){ return; }
-
-
+void OperatingSystem_HandleClockInterrupt()
+{ 
+	return;
+}

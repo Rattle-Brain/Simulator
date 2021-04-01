@@ -14,7 +14,7 @@
 109, [@G%d@@,%d]\n
 110,Process [@G%d - %s@@] moving from the [@G%s@@] state to the [@G%s@@] state\n
 111,Process [@G%d - %s@@] moving to the [@G%s@@] state\n
-112,\tUSER: [@G%d@@,%d],
+112,\t\tUSER: [@G%d@@,%d],
 113,\tDAEMONS: [@G%d@@,%d],
 114,\t\tDAEMONS: [@G%d@@,%d]\n
 115,Process [@G%d - %s@@] will transfer the control of the processor to the process [@G%d - %s@@]\n
