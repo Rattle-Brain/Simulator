@@ -1,0 +1,26 @@
+Alvarez Gonzalez Daniel
+Hecho hasta el ejercicio 15
+
+prog-V1-E0: comprobar el funcionamiento de MEMADD
+prog-V1-E3: comprobar el funcionamiento de la instruccion TRAP 3
+prog-V1-E5-tamañoInvalido: probar a añadir un programa con un tamaño invalido
+prog-V1-E5-prioridadInvalida: probar a añadir un programa con prioridad negativa
+prog-V1-E6: prueba a añadir un programa de tamaño superior al de una particion
+prog-V1-E7: prueba a añadir un programa con mas instrucciones que el tamaño indicado
+prog-V1-E12: prueba de un programa incorporando la instruccion TRAP 4
+
+	NOTA: El resto de ejercicios que no añaden un nuevo programa se han probado con los ya existentes
+
+Respuestas:
+Ejercicio 13:
+	a) Hay que guardar el PC para poder volver a acceder al programa cuando se necesite y el 
+	   PSW para recordar el estado del procesador antes de que el proceso lo abandonara
+	b) Seria necesario guardar el valor del registro acumulador.
+	c) Si, es necesario incorporar una linea que vuelva a cargar en el registro acumulador lo que
+	   habia antes de que el proceso abandonara la CPU.
+	d) Si lo anterior se implementa habria que modificar el enumerado PCB para añadir un nuevo valor.
+	   Tambien es necesario modificar la funcion OperatingSystem_SaveContext() para que guarde el 
+	   acumulador y la inicializacion de la PCB tambien tendria que contemplar dicho registro.
+Ejercicio 16:
+	No terminado
+
