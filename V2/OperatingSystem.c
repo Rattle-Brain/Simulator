@@ -57,6 +57,11 @@ char* queueNames[NUMBEROFQUEUES] = {"USER", "DAEMONS"};
 // Variable containing the number of not terminated user processes
 int numberOfNotTerminatedUserProcesses=0;
 
+// In OperatingSystem.c  Exercise 5-b of V2 
+// Heap with blocked processes sort by when to wakeup 
+heapItem sleepingProcessesQueue[PROCESSTABLEMAXSIZE]; 
+int numberOfSleepingProcesses=0;
+
 int interrupts = 1;
 
 
@@ -502,6 +507,8 @@ void OperatingSystem_HandleSystemCall() {
 			break;
 		case SYSCALL_YIELD:
 			OperatingSystem_HandleYield();
+			break;
+		case SYSCALL_SLEEP:
 			break;
 	}
 }

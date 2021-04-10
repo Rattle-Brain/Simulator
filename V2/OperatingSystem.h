@@ -19,6 +19,9 @@
 #define NOPROCESS -1
 
 #define NUMBEROFQUEUES 2
+
+#define SLEEPINGQUEUE
+
 enum TypeOfReadyToRunProcessQueues { USERPROCCESSQUEUE, DAEMONSQUEUE };
 
 // Contains the possible type of programs
@@ -28,7 +31,7 @@ enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM };
 enum ProcessStates { NEW, READY, EXECUTING, BLOCKED, EXIT};
 
 // Enumerated type containing the list of system calls and their numeric identifiers
-enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD = 4, SYSCALL_PRINTEXECPID=5};
+enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD = 4, SYSCALL_PRINTEXECPID=5, SYSCALL_SLEEP=7};
 
 // A PCB contains all of the information about a process that is needed by the OS
 typedef struct {
@@ -42,6 +45,7 @@ typedef struct {
 	unsigned int copyOfPSWRegister;
 	int copyOfAccRegister;
 	int programListIndex;
+	int whenToWakeUp;
 } PCB;
 
 // These "extern" declaration enables other source code files to gain access
