@@ -40,7 +40,8 @@ void Processor_InitializeInterruptVectorTable(int interruptVectorInitialAddress)
 		interruptVectorTable[i]=interruptVectorInitialAddress-2;  
 	}
 
-	interruptVectorTable[SYSCALL_BIT]=interruptVectorInitialAddress;  // SYSCALL_BIT=2
+	interruptVectorTable[SYSCALL_BIT]=interruptVectorInitialAddress; // SYSCALL_BIT=2
+	interruptVectorTable[CLOCKINT_BIT]=interruptVectorInitialAddress+4; //CLOCKINT_BIT=9;  
 	interruptVectorTable[EXCEPTION_BIT]=interruptVectorInitialAddress+2; // EXCEPTION_BIT=6
 }
 
@@ -243,21 +244,24 @@ void Processor_DecodeAndExecuteInstruction() {
 void Processor_ManageInterrupts() {
   
 	int i;
-
+	if (!Processor_PSW_BitState(INTERRUPT_MASKED_BIT)) {
 		for (i=0;i<INTERRUPTTYPES;i++)
 			// If an 'i'-type interrupt is pending
 			if (Processor_GetInterruptLineStatus(i)) {
+			//if (!Processor_PSW_BitState(INTERRUPT_MASKED_BIT)) {
 				// Deactivate interrupt
 				Processor_ACKInterrupt(i);
 				// Copy PC and PSW registers in the system stack
 				Processor_CopyInSystemStack(MAINMEMORYSIZE-1, registerPC_CPU);
-				Processor_CopyInSystemStack(MAINMEMORYSIZE-2, registerPSW_CPU);	
+				Processor_CopyInSystemStack(MAINMEMORYSIZE-2, registerPSW_CPU);
+				Processor_ActivatePSW_Bit(INTERRUPT_MASKED_BIT);
 				// Activate protected excution mode
 				Processor_ActivatePSW_Bit(EXECUTION_MODE_BIT);
 				// Call the appropriate OS interrupt-handling routine setting PC register
 				registerPC_CPU=interruptVectorTable[i];
 				break; // Don't process another interrupt
 			}
+	}
 }
 
 char * Processor_ShowPSW(){
@@ -273,6 +277,8 @@ char * Processor_ShowPSW(){
 		pswmask[tam-ZERO_BIT]='Z';
 	if (Processor_PSW_BitState(POWEROFF_BIT))
 		pswmask[tam-POWEROFF_BIT]='S';
+	if(Processor_PSW_BitState(INTERRUPT_MASKED_BIT))
+		pswmask[tam-INTERRUPT_MASKED_BIT] = 'M';
 	return pswmask;
 }
 

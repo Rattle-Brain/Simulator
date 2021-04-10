@@ -1,7 +1,10 @@
 #include "Clock.h"
 #include "Processor.h"
 #include "ComputerSystemBase.h"
-#include "Processor.h"
+#include "OperatingSystemBase.h"
+#ifndef DEFAULT_INTERVAL_BETWEEN_INTERRUPTS
+	#define DEFAULT_INTERVAL_BETWEEN_INTERRUPTS 5
+#endif
 
 int tics=0;
 

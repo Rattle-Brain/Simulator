@@ -18,3 +18,4 @@
 113,\tDAEMONS: [@G%d@@,%d],
 114,\t\tDAEMONS: [@G%d@@,%d]\n
 115,Process [@G%d - %s@@] will transfer the control of the processor to the process [@G%d - %s@@]\n
+120,@CClock interrupt number [%d] has ocurred\n

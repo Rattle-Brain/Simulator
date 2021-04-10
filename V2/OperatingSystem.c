@@ -57,6 +57,9 @@ char* queueNames[NUMBEROFQUEUES] = {"USER", "DAEMONS"};
 // Variable containing the number of not terminated user processes
 int numberOfNotTerminatedUserProcesses=0;
 
+int interrupts = 1;
+
+
 // Initial set of tasks of the OS
 void OperatingSystem_Initialize(int daemonsIndex) {
 	
@@ -550,11 +553,14 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 			break;
 		case CLOCKINT_BIT:
 			OperatingSystem_HandleClockInterrupt();
+			break;
 	}
 
 }
 // In OperatingSystem.c Exercise 2-b of V2
 void OperatingSystem_HandleClockInterrupt()
 { 
+	OperatingSystem_ShowTime(INTERRUPT);
+	ComputerSystem_DebugMessage(120, INTERRUPT, interrupts++);
 	return;
 }
