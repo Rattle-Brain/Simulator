@@ -29,6 +29,7 @@ void OperatingSystem_HandleYield();
 void OperatingSystem_HandleClockInterrupt();
 void OperatingSystem_SendProcessToSleep();
 void OperatingSystem_WakeUpProcess();
+int OperatingSystem_GetExecutingProcess();
 
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
@@ -97,6 +98,8 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	OperatingSystem_PrepareDaemons(daemonsIndex);
 	
 	// Create all user processes from the information given in the command line
+	ComputerSystem_FillInArrivalTimeQueue();
+	OperatingSystem_PrintStatus();
 	OperatingSystem_LongTermScheduler();
 
 	if(numberOfNotTerminatedUserProcesses == 0)
@@ -591,4 +594,9 @@ void OperatingSystem_SendProcessToSleep()
 	Heap_poll(readyToRunQueues[USERPROCCESSQUEUE], QUEUE_PRIORITY, &numberOfNotTerminatedUserProcesses);
 	numberOfSleepingProcesses++;
 	OperatingSystem_Dispatch(PID);
+}
+
+int OperatingSystem_GetExecutingProcess()
+{
+	return executingProcessID;
 }

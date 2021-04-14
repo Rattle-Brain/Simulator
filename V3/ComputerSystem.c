@@ -14,6 +14,9 @@ void ComputerSystem_PrintProgramList();
 // and all user programs specified in the command line
 PROGRAMS_DATA *programList[PROGRAMSMAXNUMBER];
 
+heapItem arrivalTimeQueue[PROGRAMSMAXNUMBER];
+int numberOfProgramsInArrivalTimeQueue = 0;
+
 // Students messages 
 char STUDENT_MESSAGES_FILE[MAXIMUMLENGTH]="messagesSTD.txt";
 

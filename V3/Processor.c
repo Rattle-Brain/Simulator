@@ -85,6 +85,7 @@ void Processor_DecodeAndExecuteInstruction() {
 	int operationCode=Processor_DecodeOperationCode(registerIR_CPU);
 	int operand1=Processor_DecodeOperand1(registerIR_CPU);
 	int operand2=Processor_DecodeOperand2(registerIR_CPU);
+	int PIDShownForOSInstruction = OperatingSystem_GetExecutingProcess();
 
 	Processor_DeactivatePSW_Bit(OVERFLOW_BIT);
 
@@ -145,6 +146,7 @@ void Processor_DecodeAndExecuteInstruction() {
 			Processor_RaiseInterrupt(SYSCALL_BIT);
 			registerA_CPU=operand1;
 			registerPC_CPU++;
+			PIDShownForOSInstruction = OperatingSystem_GetExecutingProcess();
 			break;
 		
 		// Instruction NOP
@@ -210,7 +212,8 @@ void Processor_DecodeAndExecuteInstruction() {
 		case OS_INST: // Make a operating system routine in entry point indicated by operand1
 			// Show final part of HARDWARE message with CPU registers
 			// Show message: " (PC: registerPC_CPU, Accumulator: registerAccumulator_CPU, PSW: registerPSW_CPU [Processor_ShowPSW()]\n
-			ComputerSystem_DebugMessage(69, HARDWARE,InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+			ComputerSystem_DebugMessage(130, HARDWARE, InstructionNames[operationCode],operand1,operand2, PIDShownForOSInstruction,
+				registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
 			// Not all operating system code is executed in simulated processor, but really must do it... 
 			OperatingSystem_InterruptLogic(operand1);
 			registerPC_CPU++;
@@ -236,7 +239,8 @@ void Processor_DecodeAndExecuteInstruction() {
 	
 	// Show final part of HARDWARE message with	CPU registers
 	// Show message: " (PC: registerPC_CPU, Accumulator: registerAccumulator_CPU, PSW: registerPSW_CPU [Processor_ShowPSW()]\n
-	ComputerSystem_DebugMessage(69, HARDWARE, InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+	ComputerSystem_DebugMessage(130, HARDWARE, InstructionNames[operationCode],operand1,operand2, OperatingSystem_GetExecutingProcess(),
+		 registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
 }
 	
 	
