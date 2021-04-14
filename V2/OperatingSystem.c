@@ -28,6 +28,7 @@ void OperatingSystem_PrintReadyToRunQueue();
 void OperatingSystem_HandleYield();
 void OperatingSystem_HandleClockInterrupt();
 void OperatingSystem_SendProcessToSleep();
+void OperatingSystem_WakeUpProcess();
 
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
@@ -251,55 +252,36 @@ void OperatingSystem_PrintReadyToRunQueue()
 {
 	OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
 	ComputerSystem_DebugMessage(106, SHORTTERMSCHEDULE);
+	ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE);
 	for(int i = 0; i < numberOfReadyToRunProcesses[USERPROCCESSQUEUE]; i++)
 	{
 		int PID = readyToRunQueues[USERPROCCESSQUEUE][i].info;
-		if(i == 0 && numberOfReadyToRunProcesses[USERPROCCESSQUEUE] <= 1)
-		{
-			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-			ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
-		}
-		else if(i == 0 && numberOfReadyToRunProcesses[USERPROCCESSQUEUE] > 1)
-		{
-			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-			ComputerSystem_DebugMessage(112, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
-		}
-		else if(i + 1 == numberOfReadyToRunProcesses[USERPROCCESSQUEUE])
-		{
-			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-			ComputerSystem_DebugMessage(109, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
-		}
-		else
+		if(i < numberOfReadyToRunProcesses[USERPROCCESSQUEUE] - 1)
 		{
 			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
 			ComputerSystem_DebugMessage(108, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
 		}
+		else
+		{
+			ComputerSystem_DebugMessage(109, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
+		}
 	}
-
+	ComputerSystem_DebugMessage(113, SHORTTERMSCHEDULE);
+	ComputerSystem_DebugMessage(112, SHORTTERMSCHEDULE);
 	for(int i = 0; i < numberOfReadyToRunProcesses[DAEMONSQUEUE]; i++)
 	{
 		int PID = readyToRunQueues[DAEMONSQUEUE][i].info;
-		if(i == 0 && numberOfReadyToRunProcesses[DAEMONSQUEUE] <= 1)
-		{
-			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-			ComputerSystem_DebugMessage(114, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
-		}
-		else if(i == 0 && numberOfReadyToRunProcesses[DAEMONSQUEUE] > 1)
-		{
-			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-			ComputerSystem_DebugMessage(113, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
-		}
-		else if(i + 1 == numberOfReadyToRunProcesses[DAEMONSQUEUE])
-		{
-			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-			ComputerSystem_DebugMessage(109, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
-		}
-		else
+		if(i < numberOfReadyToRunProcesses[DAEMONSQUEUE] - 1)
 		{
 			//OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
 			ComputerSystem_DebugMessage(108, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
 		}
+		else
+		{
+			ComputerSystem_DebugMessage(109, SHORTTERMSCHEDULE, PID , processTable[PID].priority);
+		}
 	}
+	ComputerSystem_DebugMessage(113, SHORTTERMSCHEDULE);
 }
 
 // Main memory is assigned in chunks. All chunks are the same size. A process
@@ -361,7 +343,7 @@ void OperatingSystem_MoveToTheREADYState(int PID, int typeQueue) {
 		}
 		processTable[PID].state=READY;
 	}
-	OperatingSystem_PrintReadyToRunQueue();
+	//OperatingSystem_PrintReadyToRunQueue();
 }
 
 
@@ -420,11 +402,10 @@ void OperatingSystem_RestoreContext(int PID) {
 
 // Function invoked when the executing process leaves the CPU 
 void OperatingSystem_PreemptRunningProcess() {
-
 	// Save in the process' PCB essential values stored in hardware registers and the system stack
 	OperatingSystem_SaveContext(executingProcessID);
 	// Change the process' state
-	if(numberOfNotTerminatedUserProcesses == 0)
+	if(numberOfNotTerminatedUserProcesses == 0 || executingProcessID == PROCESSTABLEMAXSIZE - 1)
 	{
 		OperatingSystem_MoveToTheREADYState(executingProcessID, DAEMONSQUEUE);	
 	}
@@ -575,16 +556,35 @@ void OperatingSystem_InterruptLogic(int entryPoint)
 // In OperatingSystem.c Exercise 2-b of V2
 void OperatingSystem_HandleClockInterrupt()
 { 
+	if(interrupts == 1){
+		Heap_poll(sleepingProcessesQueue, QUEUE_WAKEUP, &numberOfSleepingProcesses);
+	}
 	OperatingSystem_ShowTime(INTERRUPT);
 	ComputerSystem_DebugMessage(120, INTERRUPT, interrupts++);
+	OperatingSystem_WakeUpProcess();
 	return;
+}
+
+void OperatingSystem_WakeUpProcess()
+{
+	if(Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses) != -1
+		&& processTable[Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses)].whenToWakeUp == interrupts)
+	{
+		int sleepingPID = Heap_poll(sleepingProcessesQueue, QUEUE_WAKEUP, &numberOfSleepingProcesses);
+		Heap_add(sleepingPID,readyToRunQueues[USERPROCCESSQUEUE], QUEUE_PRIORITY, &numberOfNotTerminatedUserProcesses, PROCESSTABLEMAXSIZE);
+		numberOfNotTerminatedUserProcesses++;
+		int nextPid = OperatingSystem_ShortTermScheduler();
+		OperatingSystem_PreemptRunningProcess();
+		OperatingSystem_Dispatch(nextPid);
+	}
 }
 
 void OperatingSystem_SendProcessToSleep()
 {
 	int PID = executingProcessID;
+	OperatingSystem_SaveContext(PID);
 	processTable[PID].whenToWakeUp = interrupts + abs(Processor_GetRegisterA()) + 1;
-	ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "EXECUTING", "BLOCKED");
+	//ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "EXECUTING", "BLOCKED");
 	OperatingSystem_PreemptRunningProcess();
 	processTable[PID].state = BLOCKED;
 	Heap_add(processTable[PID].whenToWakeUp, sleepingProcessesQueue, QUEUE_WAKEUP, &numberOfSleepingProcesses, PROCESSTABLEMAXSIZE);

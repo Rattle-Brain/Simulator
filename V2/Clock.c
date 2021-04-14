@@ -21,6 +21,7 @@ void Clock_Update()
 	}
 
 	tics++;
+	
     // ComputerSystem_DebugMessage(97,CLOCK,tics);
 
 }

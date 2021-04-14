@@ -9,13 +9,12 @@
 104,@RERROR: Program [%s] is not valid  [--- %s ---]\n
 105,@RERROR: Program [%s] is too big\n
 106,Ready-to-run processes queues:\n
-107,\t\tUSER: [@G%d@@,%d]\n
+107,\t\tUSER:
+112,\t\tDAEMONS:
+113,\n
 108, [@G%d@@,%d], 
-109, [@G%d@@,%d]\n
+109, [@G%d@@,%d]
 110,Process [@G%d - %s@@] moving from the [@G%s@@] state to the [@G%s@@] state\n
 111,Process [@G%d - %s@@] moving to the [@G%s@@] state\n
-112,\t\tUSER: [@G%d@@,%d],
-113,\tDAEMONS: [@G%d@@,%d],
-114,\t\tDAEMONS: [@G%d@@,%d]\n
 115,Process [@G%d - %s@@] will transfer the control of the processor to the process [@G%d - %s@@]\n
 120,@CClock interrupt number [%d] has ocurred\n
