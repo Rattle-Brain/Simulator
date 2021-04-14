@@ -27,6 +27,7 @@ void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 void OperatingSystem_HandleYield();
 void OperatingSystem_HandleClockInterrupt();
+void OperatingSystem_SendProcessToSleep();
 
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
@@ -353,6 +354,10 @@ void OperatingSystem_MoveToTheREADYState(int PID, int typeQueue) {
 				OperatingSystem_ShowTime(SYSPROC);
 				ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "EXECUTING", "READY");
 				break;
+			// case BLOCKED:
+			// 	OperatingSystem_ShowTime(SYSPROC);
+			// 	ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "BLOCKED", "READY");
+			// 	break;
 		}
 		processTable[PID].state=READY;
 	}
@@ -509,6 +514,7 @@ void OperatingSystem_HandleSystemCall() {
 			OperatingSystem_HandleYield();
 			break;
 		case SYSCALL_SLEEP:
+			OperatingSystem_SendProcessToSleep();
 			break;
 	}
 }
@@ -550,7 +556,8 @@ void OperatingSystem_HandleYield()
 }
 	
 //	Implement interrupt logic calling appropriate interrupt handle
-void OperatingSystem_InterruptLogic(int entryPoint){
+void OperatingSystem_InterruptLogic(int entryPoint)
+{
 	switch (entryPoint){
 		case SYSCALL_BIT: // SYSCALL_BIT=2
 			OperatingSystem_HandleSystemCall();
@@ -560,6 +567,7 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 			break;
 		case CLOCKINT_BIT:
 			OperatingSystem_HandleClockInterrupt();
+			OperatingSystem_PrintStatus();
 			break;
 	}
 
@@ -570,4 +578,17 @@ void OperatingSystem_HandleClockInterrupt()
 	OperatingSystem_ShowTime(INTERRUPT);
 	ComputerSystem_DebugMessage(120, INTERRUPT, interrupts++);
 	return;
+}
+
+void OperatingSystem_SendProcessToSleep()
+{
+	int PID = executingProcessID;
+	processTable[PID].whenToWakeUp = interrupts + abs(Processor_GetRegisterA()) + 1;
+	ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, "EXECUTING", "BLOCKED");
+	OperatingSystem_PreemptRunningProcess();
+	processTable[PID].state = BLOCKED;
+	Heap_add(processTable[PID].whenToWakeUp, sleepingProcessesQueue, QUEUE_WAKEUP, &numberOfSleepingProcesses, PROCESSTABLEMAXSIZE);
+	Heap_poll(readyToRunQueues[USERPROCCESSQUEUE], QUEUE_PRIORITY, &numberOfNotTerminatedUserProcesses);
+	numberOfSleepingProcesses++;
+	OperatingSystem_Dispatch(PID);
 }

@@ -20,7 +20,7 @@
 
 #define NUMBEROFQUEUES 2
 
-#define SLEEPINGQUEUE
+#define SLEEPINGQUEUE 3
 
 enum TypeOfReadyToRunProcessQueues { USERPROCCESSQUEUE, DAEMONSQUEUE };
 
